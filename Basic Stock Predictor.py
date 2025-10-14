@@ -12,11 +12,11 @@ def stock_prediction(y, days=30, size=0.05):
   # Loop for data extraction & Set up statements for start and end dates
   for ticker in y:
     # When neither start date nor end date is defined
-    data = yf.download(ticker)
+    data = yf.download(ticker, start="2007-01-01")
 
     # Extract the Adjusted Close prices and add to the DataFrame
     if not data.empty: 
-      p[ticker] = data['Adj Close']
+      p[ticker] = data[('Close', f'{ticker}')]
 
     df = p.dropna() # Drop rows with NA values
 
