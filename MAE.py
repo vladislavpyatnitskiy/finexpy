@@ -1,32 +1,39 @@
 import pandas as pd
 import yfinance as yf
 
-def MAE(tickers, start_date=None, end_date=None, data=True):
-    if data:
-        price_data = pd.DataFrame()
+def MAE(y, s=None, e=None, data=True):
+  
+    p = pd.DataFrame()  # Create an empty DataFrame
 
-        for ticker in tickers:
-            if start_date is None and end_date is None:
-                price_data[ticker] = yf.download(ticker)['Close']
-            elif start_date is not None and end_date is None:
-                price_data[ticker] = yf.download(ticker,
-                                                 start=start_date)['Close']
-            elif start_date is None and end_date is not None:
-                price_data[ticker] = yf.download(ticker,
-                                                 end=end_date)['Close']
-            else:
-                price_data[ticker] = yf.download(ticker, start=start_date,
-                                                 end=end_date)['Close']
-        x = price_data.dropna()
+    # Loop for data extraction & Set up statements for start and end dates
+    for ticker in y:
+        if s is None and e is None:
+            # When neither start date nor end date is defined
+            data = yf.download(ticker, start="2007-01-01")
+        elif e is None:
+            data = yf.download(ticker, start=s) # Only start date is defined
+        elif s is None:
+            data = yf.download(ticker, end=e)  # When only end date is defined
+        else:
+            # When both start date and end date are defined
+            data = yf.download(ticker, start=s, end=e)
 
+        # Extract the Adjusted Close prices and add to the DataFrame
+        if not data.empty:
+            p[ticker] = data[('Close', f'{ticker}')]
+
+    p = p.dropna() # Drop rows with NA values
+    
+    p.columns = y
+    
     l = []
 
-    for col in x.columns:
-        s = x[col]
-        l.append(sum(abs(s - s.mean())) / len(s))
+    for col in p.columns:
+        a = p[col]
+        l.append(sum(abs(a - a.mean())) / len(a))
 
-    result = pd.DataFrame({"MAE": l}, index=x.columns)
+    result = pd.DataFrame({"MAE": l}, index=p.columns)
+    
     return result
 
-mae_result = MAE(["AAPL", "C"], start_date="2020-01-01", data=True) # Test
-print(mae_result)
+MAE(["AAPL", "C"], s="2020-01-01", data=True) # Test
