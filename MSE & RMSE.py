@@ -2,38 +2,46 @@ import yfinance as yf
 import numpy as np
 import pandas as pd
 
-def MSE(tickers, s=None, e=None, data=True, root=True):
+def MSE(y, s=None, e=None, data=True, root=True):
     if data:
-        price_data = pd.DataFrame()
+        p = pd.DataFrame()  # Create an empty DataFrame
 
-        for ticker in tickers:
+        # Loop for data extraction & Set up statements for start and end dates
+        for ticker in y:
             if s is None and e is None:
-                price_data[ticker] = yf.download(ticker)['Close']
-            elif s is not None and e is None:
-                price_data[ticker] = yf.download(ticker, start=s)['Close']
-            elif s is None and e is not None:
-                price_data[ticker] = yf.download(ticker, end=e)['Close']
+                # When neither start date nor end date is defined
+                data = yf.download(ticker, start="2007-01-01")
+            elif e is None:
+                data = yf.download(ticker, start=s) # Start date is defined
+            elif s is None:
+                data = yf.download(ticker, end=e)  # nd date is defined
             else:
-                price_data[ticker] = yf.download(ticker,start=s,end=e)['Close']
-        x = price_data.dropna()
+                # When both start date and end date are defined
+                data = yf.download(ticker, start=s, end=e)
+    
+            # Extract the Adjusted Close prices and add to the DataFrame
+            if not data.empty:
+                p[ticker] = data[('Close', f'{ticker}')]
+    
+    p = p.dropna() # Drop rows with NA values
+        
+    p.columns = y
 
     l = []
     
-    for col in x.columns:
-        s = x[col] # For each column get RMSE and MSE values
+    for col in p.columns:
+        a = p[col] # For each column get RMSE and MSE values
         
         if root is True:
-          l.append(np.sqrt(np.mean((s - np.mean(s))**2))) # RMSE values
+          l.append(np.sqrt(np.mean((a - np.mean(a)) ** 2))) # RMSE values
+          
+          c = "RMSE"
           
         else:
-          l.append(np.mean((s - np.mean(s))**2)) # MSE values
+          l.append(np.mean((a - np.mean(a)) ** 2)) # MSE values
+          
+          c = "MSE"
     
-    if root is True:
-      result = pd.DataFrame({"RMSE": l}, index=x.columns) # RMSE Column Name
-      
-    else:
-      result = pd.DataFrame({"MSE": l}, index=x.columns) # MSE Column Name
-      
-    return result # Display
+    return pd.DataFrame({c: l}, index=y) # Display
 
-print(MSE(["AAPL", "C"], s="2020-01-01", data=True, root=True)) # Test
+MSE(["AAPL", "C"], s="2020-01-01", data=True, root=True) # Test
