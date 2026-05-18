@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 
-def pairs_column(y, s=None, e=None, details=False): # Correlation pairs
+# Correlation pairs
+def pairs_column(y, s=None, e=None, details=False, method="pearson"): 
   
   p = pd.DataFrame()  # Create an empty DataFrame
 
@@ -25,8 +26,14 @@ def pairs_column(y, s=None, e=None, details=False): # Correlation pairs
             
   p = p.dropna() # Drop rows with NA values
   
-  cor_matrix = p.corr() # Calculate correlation matrix
-
+  #cor_matrix = p.corr() # Calculate correlation matrix
+  
+  if method == "pearson":
+    cor_matrix = p.corr(method='pearson')  # Pearson correlation
+  
+  else:
+    cor_matrix = p.corr(method='spearman') # Spearman correlation
+  
   # Extract unique pairs and their correlations
   cor_pairs = np.triu_indices_from(cor_matrix, k=1)
   unique_pairs = pd.DataFrame({
