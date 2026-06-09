@@ -7,36 +7,46 @@ from sklearn.linear_model import LinearRegression
 
 def stock_prediction(y, days=30, size=0.05):
   
-  p = pd.DataFrame()  # Create an empty DataFrame
+    for ticker in y:
+        # Download data
+        data = yf.download(ticker, start="2007-01-01")
+        if data.empty:
+            print(f"No data for {ticker}, skipping.")
+            continue
 
-  # Loop for data extraction & Set up statements for start and end dates
-  for ticker in y:
-    # When neither start date nor end date is defined
-    data = yf.download(ticker, start="2007-01-01")
+        # With auto_adjust=True, Close is a simple column
+        close = data[['Close']].copy()
+        close.columns = [ticker]
+        close.dropna(inplace=True)
 
-    # Extract the Adjusted Close prices and add to the DataFrame
-    if not data.empty: 
-      p[ticker] = data[('Close', f'{ticker}')]
+        # Predict `days` days into the future
+        close['Prediction'] = close[ticker].shift(-days)
+        close.dropna(inplace=True)
 
-    df = p.dropna() # Drop rows with NA values
+        # Independent (X) and dependent (Y) datasets
+        X = np.array(close[[ticker]])
+        Y = np.array(close['Prediction'])
 
-  df['Prediction'] = df[y].shift(-1 * days)  # Predict 30 days into the future
-  df.dropna(inplace=True)
-  
-  # Create independent (X) and dependent (y) datasets
-  X = np.array(df.drop(['Prediction'], 1))
-  Y = np.array(df['Prediction'])
-  
-  # Split the data into training and testing sets
-  X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=size)
-  
-  # Initialize and train the Linear Regression model
-  lr_model = LinearRegression()
-  lr_model.fit(X_train, y_train)
-  
-  # Predict stock prices for the test dataset
-  predictions = lr_model.predict(X_test)
-  
-  print(lr_model.predict(df.drop(['Prediction'], 1)[-1 * days:]))
-    
-stock_prediction(["AMZN"]) # Test
+        # Train/test split
+        X_train, X_test, y_train, y_test = train_test_split(
+          X, Y, test_size=size)
+
+        # Train Linear Regression model
+        lr_model = LinearRegression()
+        lr_model.fit(X_train, y_train)
+
+        # Predict the last `days` rows (the future window)
+        future_X = np.array(close[[ticker]])[-days:]
+        future_predictions = lr_model.predict(future_X)
+
+        # Plot historical close price
+        plt.figure()
+        plt.plot(future_predictions)
+        plt.title(ticker)
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        plt.grid(True, linestyle=":", color="grey")
+        plt.legend()
+        plt.show()
+
+stock_prediction(["AMZN", "C"])
