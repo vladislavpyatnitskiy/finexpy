@@ -61,3 +61,61 @@ C best model: (3, 0, 0)
       with_intercept=False)}
 ```
 Table 2. ARIMA models
+
+```
+{'AMZN': {'order': (2, 0, 0), 'aic': -22833.389395128506, 'bic': -22813.90393894689, 'summary': <class 'statsmodels.iolib.summary.Summary'>
+"""
+                               SARIMAX Results                                
+==============================================================================
+Dep. Variable:                   AMZN   No. Observations:                 4891
+Model:               SARIMAX(2, 0, 0)   Log Likelihood               11419.695
+Date:                Sat, 13 Jun 2026   AIC                         -22833.389
+Time:                        22:24:16   BIC                         -22813.904
+Sample:                             0   HQIC                        -22826.552
+                               - 4891                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+ar.L1         -0.0192      0.009     -2.158      0.031      -0.037      -0.002
+ar.L2         -0.0340      0.012     -2.894      0.004      -0.057      -0.011
+sigma2         0.0005   4.45e-06    123.459      0.000       0.001       0.001
+===================================================================================
+Ljung-Box (L1) (Q):                   0.02   Jarque-Bera (JB):             23036.05
+Prob(Q):                              0.89   Prob(JB):                         0.00
+Heteroskedasticity (H):               0.61   Skew:                             0.65
+Prob(H) (two-sided):                  0.00   Kurtosis:                        13.55
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+"""}, 'C': {'order': (3, 0, 0), 'aic': -19938.37792166033, 'bic': -19912.397313418172, 'summary': <class 'statsmodels.iolib.summary.Summary'>
+"""
+                               SARIMAX Results                                
+==============================================================================
+Dep. Variable:                      C   No. Observations:                 4891
+Model:               SARIMAX(3, 0, 0)   Log Likelihood                9973.189
+Date:                Sat, 13 Jun 2026   AIC                         -19938.378
+Time:                        22:24:19   BIC                         -19912.397
+Sample:                             0   HQIC                        -19929.262
+                               - 4891                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+ar.L1          0.0428      0.005      9.486      0.000       0.034       0.052
+ar.L2          0.0490      0.005     10.394      0.000       0.040       0.058
+ar.L3         -0.0312      0.005     -6.171      0.000      -0.041      -0.021
+sigma2         0.0010   4.95e-06    200.309      0.000       0.001       0.001
+===================================================================================
+Ljung-Box (L1) (Q):                   0.02   Jarque-Bera (JB):            302477.25
+Prob(Q):                              0.88   Prob(JB):                         0.00
+Heteroskedasticity (H):               0.26   Skew:                            -0.35
+Prob(H) (two-sided):                  0.00   Kurtosis:                        41.52
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+"""}}
+```
+Table 3. ARIMA summary
